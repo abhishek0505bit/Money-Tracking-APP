@@ -1,38 +1,125 @@
-.App {
-  text-align: center;
+/* This is known as css reset, done to remove any styling applied by the browser
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+*{
+  box-sizing: border-box;
+
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+body{
+  background-color: rgb(14, 13, 43);
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+main{
+  /* max width will put the content inside it  */
+  max-width: 300px ; 
+
+  /* top bottom margin is 0 and right left is auto  */
+  margin: 0 auto; 
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h1{
+  text-align: center; /* align the text in center of the content area*/
+  color: rgb(246, 243, 212);
+}
+
+form input{
+
+  /* this will help the inputs(elements) to take the 100% width */
+  width: 100%;
+
+  background-color: transparent;  /*this will make the background transparent*/
+  color: white;
+  border: 2px solid rgb(163, 159, 159);
+  padding: 2px 5px; /*top bottom padding: 2px and right-left padding:5px*/
+  border-radius: 5px;
+}
+
+form input[type="datetime-local"]{
+  color: #777;
+}
+
+/* this is the parent for some form inputs, so with this, children inside this block will be adjusted horizontally  */
+form div.basic{
+  display: flex;
+
+  /*This adds a 5-pixel space between each of the child elements inside the flex container (div.basic). It only applies between items, not around the edges of the container.*/
+  gap: 5px; 
+
+  margin-bottom: 5px; /* this will add the margin below this box */
+}
+
+form div.basic input {
+  flex: 1; /* Makes each children take up equal space */
+  min-width: 0; /* sets the minimum width of children */
+}
+
+form button{
+  width: 100%;
+  margin-top: 5px;
+  border: 0;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #ddd;
+}
+
+div.transactions{
+  margin-top: 10px;
+
+}
+
+div.transaction{
+  display: flex;
+  justify-content: space-between; /*Display the flex items with space between the lines*/
+  padding: 5px 0; /*this adds spacing around the content, here: 5px top bottom, 0 left right */
+  border-top: 2px solid rgb(163, 159, 159); /* this will add a horizontal line above each transaction*/
+}
+
+div.transaction:first-child{
+  border-top: 0; /*this will remove any horizontal line above the first transactin from the first transaction*/
+}
+
+/*"em" is a unit of measurement in CSS that defines an element's size in relation to its parent element's font size
+for eg: parent of p is div,and you give p{font-size: 2em} so if font-size of div is: 16px, then font-size of p = 32px
+
+'rem': relative to the font size of the root-element i.e, HTML here, and does not relative to parent element
+for eg: parent of p is div,and you give p{font-size: 2rem} so if font-size of html is: 16px, then font-size of p = 32px, irrespective of size of div
+
+*/
+div.transaction div.name{
+    font-size: 1.2rem;
+}
+
+/*targeting the div which has a class transaction*/
+div.transaction div.description{
+
+  font-size: 0.8rem;
+  color: #888;
+
+}
+
+div.right{
+  text-align: right;
+}
+
+/*targeting the div which contains both the classes, price and green*/
+div.price.green{
+  color: rgb(114, 195, 114);
+}
+
+/*targeting the div which contains both the classes, price and red*/
+div.price.red{
+  color:rgb(244, 81, 81);
+}
+
+/* should be same as div.transaction div.description */
+div.transaction div.datetime{
+  font-size: 0.8rem;
+  color: #888;
+
 }
