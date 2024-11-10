@@ -1,0 +1,104 @@
+1) we we need to send the data to backend, we have express js for that 
+    Lets create index.js in api(for backend) folder:
+    navigate to api folder in terminal
+    initialize npm: npm init y
+    then: npm install express 
+
+2) for understanding that where we can use req parameter in the callback, refer the below example for get request :
+    app.get('/greet', (req, res) => {
+        const name = req.query.name; // Access the 'name' query parameter from the request
+        if (name) {
+            res.send(`Hello, ${name}!`); // Send a personalized greeting
+        } else {
+            res.send('Hello, stranger!');
+        }
+    });
+
+3) What Are Routes and Controllers?
+        Routes: Define the paths and associate them with HTTP methods (like GET, POST, etc.). 
+                They act as entry points to different parts of your application.
+        Controllers: Contain the logic that gets executed when a route is accessed. 
+                    Controllers are like the “brains” behind routes.
+
+4) now lets understand about index.js and routes in deep:
+    first lets clear the doubts on routes:
+        index.js:
+            app.use('/', greetRoutes);
+
+        greetRoutes.js:
+            router.get('/greet', greetController.greetUser);
+
+        This defines a GET route at /greet that uses greetController.greetUser as its handler function.
+        `When you visit http://localhost:3000/greet, Express will trigger greetController.greetUser. 
+
+    now lets talk about one more eg: 
+        index.js:
+            api.use('/api/auth', authRoutes);
+        
+        authRoutes: 
+            router.get('/', authController.authUser)
+
+        This defines a GET route at /greet that uses greetController.greetUser as its handler function.
+        `When you visit http://localhost:3000/greet, Express will trigger greetController.greetUser. 
+
+    How app.use() and router.get() Work Together?
+        When you use app.use() in index.js, you're setting up a base path (a prefix) for a group of routes defined in another file (like transactionRoutes.js).
+
+        The router.get('/') (or any other route) then defines additional paths relative to that base path.
+
+        Example:
+        1. index.js (Setting the Base Path)
+            // index.js
+            const express = require('express');
+            const app = express();
+            const transactionRoutes = require('./transactionRoutes'); // Importing the routes
+
+            // Define the base path for transaction routes
+            app.use('/transaction', transactionRoutes); // Any route in transactionRoutes.js will now start with /transaction
+
+            const PORT = 3000;
+            app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+            });
+
+        Here, you are saying: "All routes from transactionRoutes.js should be prefixed with /transaction."
+        This means that if you define a route like GET / in transactionRoutes.js, 
+        it will actually be available at http://localhost:3000/transaction/.
+       
+        2. transactionRoutes.js (Defining the Routes)
+            // transactionRoutes.js
+            const express = require('express');
+            const router = express.Router();
+            const transactionController = require('./transactionController');
+
+            // Define routes relative to the base path `/transaction`
+            router.get('/', transactionController.handleTransaction); // This will handle requests to /transaction/
+
+            module.exports = router;
+
+        In transactionRoutes.js, you defined the route router.get('/'), which means "when someone hits the root path of this router".
+        Since this router is mounted at /transaction in index.js, the full route becomes /transaction/.
+
+        3. transactionController.js (Defining the Controller Logic)
+            // transactionController.js
+            exports.handleTransaction = (req, res) => {
+            res.send('Transaction handled!');
+            };
+        Here, the handleTransaction function will be triggered when someone visits http://localhost:3000/transaction/.
+        It simply sends the response "Transaction handled!".
+
+        The Flow of the Request
+            User visits: http://localhost:3000/transaction/.
+            Express checks: The app.use('/transaction', transactionRoutes) in index.js tells Express to look for routes in transactionRoutes.js that are prefixed with /transaction.
+            Route matched: The route router.get('/') in transactionRoutes.js matches /transaction/.
+            Controller executed: The transactionController.handleTransaction function is triggered.
+            Response sent: The response "Transaction handled!" is sent back to the user.
+        Key Point:
+            app.use('/transaction', transactionRoutes): This means all routes inside transactionRoutes.js will be available under /transaction.
+            router.get('/') in transactionRoutes.js: This defines the "sub-path" after /transaction. 
+            So, router.get('/') means /transaction/ (no additional path after /transaction).
+        Final Summary
+            Yes, app.use('/transaction', transactionRoutes) defines the base path for the routes, and 
+            router.get('/') (inside transactionRoutes.js) defines the path relative to that base path. 
+            So, if you visit http://localhost:3000/transaction/, it will trigger the logic inside transactionController.handleTransaction.
+

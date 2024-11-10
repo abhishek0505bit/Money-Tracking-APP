@@ -1,0 +1,60 @@
+1) why to use border sizing : border box?
+The `box-sizing` property in CSS determines how the total width and height of an element are calculated. 
+When it's set to `content-box` (which is the default), 
+the size you specify using properties like `width` and `height` only applies to the content area of the element. 
+This means padding and borders are added to this size.
+
+Here are some simple examples to help clarify this:
+
+1. **Content-only size**:
+   Let's say you have a `<div>` with a width of 200 pixels set in CSS.
+   ```css
+   div {
+       width: 200px;
+       height: 100px;
+       padding: 20px; /* Padding adds extra space around content */
+       border: 5px solid black; /* Border adds more space */
+   }
+   ```
+   In this case:
+   - The content area will be 200px wide and 100px tall.
+   - The actual width will be larger: 200px (content) + 20px*2 (padding) + 5px*2 (border) = 250px.
+   - So, the total width is 250 pixels, while the height is 130 pixels (100 + 20*2 + 5*2).
+
+2. **Using min-width and max-width**:
+   Consider a div where you want to ensure it doesn't get too small or too large.
+   ```css
+   div {
+       width: 100%; /* The width can fill its parent */
+       min-width: 150px; /* It cannot be smaller than 150px */
+       max-width: 300px; /* It cannot be larger than 300px */
+       height: 50px;
+   }
+   ```
+   - If the parent is very small, the div will expand to 150px because of `min-width`.
+   - If the parent is large, it can grow up to 300px due to `max-width`.
+   - The height remains at 50px, but padding and borders will add to the overall height just like in the first example.
+
+3. **Using height properties**:
+   If you want to control the height in a similar way:
+   ```css
+   div {
+       width: 200px;
+       height: 150px;
+       min-height: 100px; /* Cannot be smaller than 100px */
+       max-height: 300px; /* Cannot be larger than 300px */
+       padding: 10px;
+   }
+   ```
+   - Here, the content area is 200px wide and 150px tall.
+   - Again, padding and border will be added to the total size.
+
+These examples show how setting `box-sizing: content-box` affects the size of elements and 
+how you can control the dimensions using width, height, min-width, max-width, min-height, and max-height. 
+The total rendered size of the element will always be larger than the specified width and height because of padding and borders.
+
+THIS IS WHY WE USE BOX SIZING: BORDER BOX, IN ORDER TO DEAL WITH ELEMENT SIZES IN MUCH EASIER WAY:
+Here the dimensions of the element are calculated as: 
+width = border + padding + width of the content, and height = border + padding + height of the content.
+WITH BORDER BOX, YOU ARE MAKING SURE, THAT WHATEVER WIDTH OR HEIGHT YOU ARE PROVIDING, SHOULD NOT OVERFLOW DUE TO PADDING, BORDER AND MARGIN.
+----------------------------------------------------------------------------------------------------------------------------------------------

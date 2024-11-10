@@ -1,0 +1,258 @@
+1) how to initialize react app on your project?
+- npx create-react-app money-tracking-app
+- cd money-tracking-app 
+- npm start 
+
+2) we create a HTML form, in such a way to fill the transaction 
+Transactions are organized into rows, with a clear division for price and a button to add transaction 
+
+after we are done with the structure(HTML) and css of the app:
+3) we want our app to be functional:
+- we create state variables to manage inputs and states:
+lets understand event.target.value with onChange:
+    Initially,The event argument is an object provided by the browser whenever an event (like change) occurs. 
+    This object contains information about the event and the element that triggered it.
+
+    about event:
+         event => setName(event.target.value)
+            event: This represents the event object. Every time an input changes, an event is triggered.
+            event.target: This refers to the element that triggered the event — in this case, the input field.
+            event.target.value: This is the current value of the input field, i.e., the text the user has typed so far.
+
+    For eg:
+        <input
+            type="text"
+            value={name} // Sets the value of the input to the "name" state
+            onChange={(event) => setName(event.target.value)} // Calls a function when input changes
+            placeholder="Enter your name"
+        />
+
+        onChange: is an attribute in JSX. It doesn’t trigger automatically by itself but waits for an event.
+        The function you pass to onChange (like (event) => setName(event.target.value)) will be called by React whenever the event occurs.
+            so, when the event occurs, the browser provides the event argument.
+            accepted by onChange, and then react uses it to call setName(event.target.value)
+        So, onChange is a bit like a "listener" that React connects to your function, and it runs whenever the input changes. 
+        Your function then receives event as an argument, which has all the information about the change.
+
+4) create handler functions to handle the changes and form submissions 
+
+5) for form submissions lets create an API, 
+    install express: 
+        cd money-tracking-app
+        npm install express
+
+6) are .then/.catch and async/await similar..?
+    Yes, they are equivalent in behavior but different in style:
+        Using .then and .catch is a way to chain Promises and handle them.
+        Using async/await makes the code look sequential, but it’s still asynchronous under the hood.
+        
+        async/await:
+            const fun1 = async () => {
+            const response = await fetch(api); // fetch the API
+            const data = await response.json(); // parse the response to get data
+            console.log(data); // now you can safely log the data
+            };
+
+        similarly, we can achieve the above using .then/.catch using below code:
+            fetch(api)
+            .then((response) => response.json())
+            .then((data) => console.log(data))
+            .catch((error) => console.error("Error while fetching data", error));
+
+        Lets talk about the eg. which uses async/await:
+            if you use await correctly, it does wait at that line.
+            However, other parts of your program outside fun1 can still keep running (it doesn’t freeze the entire code, just this function).
+
+        Then what will happen, if we are trying to access the data within asyn fun(here fun1()) using a global variable, will it give undefined..?
+            In the below code, we are trying to access the data inside async fun in the global variable: 
+                let fetchedData;
+                const fun1 = async () => {
+                const response = await fetch(api);
+                fetchedData = await response.json();
+                };
+                fun1();
+                console.log(fetchedData); // This will likely log `undefined`
+            Since fetch is asynchronous, it takes time to complete. 
+            However, the rest of the code (outside the async function) does not wait for it. 
+            This means any code outside fun1 trying to access the data immediately after calling fun1() will most likely get undefined, 
+            because fetch hasn’t finished yet.
+        
+        Structure of promise functions:
+            function myPromiseFunction() {
+                return new Promise((resolve, reject) => {
+                    // Perform some asynchronous operation, then:
+                    
+                    // If the operation is successful, call resolve(value)
+                    // resolve("Success message");
+
+                    // If the operation fails, call reject(error)
+                    // reject("Error message");
+                });
+            }
+
+        Structure of setTimeout function:
+            setTimeout(() => {// Code to execute after delay} , delayInMilliseconds);
+
+            Explanation:
+            callback: The first argument is a function (often an arrow function) that will be executed after the delay.
+            delayInMilliseconds: The second argument specifies the delay in milliseconds (e.g., 1000 ms = 1 second).
+
+        This is the simplest way to understand the similarity in the behavior of async/await and .then/.catch:
+        // function that returns promise 
+            const fun2 =()=>{
+
+            return new Promise((resolve, reject)=>{
+                if(false)
+                {
+                resolve("successfully Resolved")
+                }
+                else{
+                reject("error")
+                }
+            })
+            }
+
+            // using .then and .catch
+            fun2()
+            .then((res)=>console.log(res))
+            .catch((er)=>console.log(er));// outputs "error"
+
+            //using async and await 
+            const fun1 = async () => {
+            try{
+                const response = await fun2();
+            console.log(response);
+            }
+            catch(err){
+                console.log(err)
+            }
+
+            };
+            fun1()// calling fun1() , outputs "error"
+
+
+        what are callbacks..?
+        callbacks are the functions which are passed as an argument to another functions.
+        these callbacks allows us to specify, what to do with the data when asynchronous operations are complete, with the help of
+        .then and .catch
+        with simple functions, we cannot achieve that.
+
+        For Eg:
+        Using Normal Functions:
+        // Normal function to handle the data
+            function handleData(data) {
+                console.log("Data received:", data);
+                }
+
+                // Trying to fetch data and immediately pass it to handleData
+                function fetchData() {
+                const data = fetch("https://jsonplaceholder.typicode.com/posts/1")
+                    .then((response) => response.json());
+
+                handleData(data); // This won't work as expected
+            }
+            fetchData(); // Outputs: Data received: Promise {}
+        This doesn't give the proper output
+        also we cannot use it for asynchronous operations, after the promise is resolved by using .then
+        It executes immediately before the completion of api fetch operation(async operation) and gives the incorrect output, 
+        Thats where the callbacks(functions passed as arguments to other functions ) into picture
+
+        Using callbacks: 
+            function handleData(error, data) {
+                if (error) {
+                    console.error("Error fetching data:", error);
+                } else {
+                    console.log("Data received:", data);
+                }
+                }
+                function fetchData(callback) {
+                fetch("https://jsonplaceholder.typicode.com/posts/1")
+                    .then((response) => response.json())
+                    .then((data) => callback(null, data)) // Call callback with data
+                    .catch((error) => callback(error, null)); // Call callback with error if failed
+            }
+            fetchData(handleData); // Outputs: Data received: (4) {userId: 1, id: 1, title: "sunt aut ...}
+        This will give you the proper output, as it can be used with .then and .catch and doesn't execute immediately.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+get the understanding of express app again from chat gpt in detail
+nodemon(to let changes reflect on the ui without doing: node index.js) => nodemon index.js [This will automatically reflect the changes made in code on UI  ]
+we should have the settings file(.env) file in order to keep track of the base uRL, because it may change in the server
+need to install cors, in order to talk to frontend
+app.use(express.json())
+we use mongoose library to connect to mongo db
+model and schema in mongoose
+what is display : inline-block(is it related to parent)
+
+when to use then, how to know when to use then and when to use async (✅) understood 
+Is fetch(url).then(response) and await const response = await fetch(url) is same..? ✅ yes both are same 
+and .then(transactions)=>{setTransactions(transactions)} & .then(setTransactions) same? yes, .then will automatically pass the resolved value (from the Promise) to it.
+clarity on async, which is async with simpler examples, if not async , can we put then before an async thing: in detail✅understood, yes we can replace async with .then 
+useEffect usage in detail 
+
+
+[17:18](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1038) Finalize form styling and integrate API for transaction management.
+- Remove unnecessary borders and adjust spacing for a cleaner look in the transaction list.
+- Create state variables for form inputs and implement functionality to submit new transactions to the database.
+
+[19:53](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1193) Setting up backend for the MERN Money Tracker App with Express.
+- Define a function for adding new transactions in the React app that communicates with the backend.
+- Create an Express server in a new 'API' directory to handle requests and test the setup with an endpoint.
+
+[25:04](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1504) Setting up API integration for the MERN Money Tracker App.
+- Configuring the API URL using environment variables and ensuring that the frontend can access it.
+- Handling form submission by preventing the default behavior and setting up options for the Fetch method to post transactions.
+
+[27:40](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1660) Setting up CORS and JSON parsing for backend communication.
+- Learned to handle CORS errors by importing and using the CORS middleware in Express to allow communication between frontend and backend apps.
+- Implemented JSON parsing in Express to ensure that incoming request data from the React app can be processed and stored correctly.
+
+[32:43](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1963) Setting up Mongoose for database interactions in the MERN money tracker app.
+- The user configures server access to allow deployment and database creation, ensuring functionality regardless of server IP.
+- Mongoose is installed to handle database operations, requiring the definition of a schema with fields like name, description, and date time for transactions.
+
+[35:22](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2122) Creating and exporting a transaction model for the MERN app.
+- Define a Mongoose transaction model using schema, allowing for structured data storage.
+- Connect the model to the MongoDB database using Mongoose, configuring connection settings in an environment file.
+
+[40:21](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2421) Integrating transaction data into the MERN application model.
+- Using Mongoose to create a new transaction document in the database requires defining the transaction model with fields like name, description, and date-time.
+- To ensure proper data capture, modifications were made to include the price in the transaction model, making it a required field alongside the name and description.
+
+[42:50](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2570) Extract and manage price and name in a MERN app form.
+- Use JSON.stringify to structure data for easier reading by separating it into rows.
+- Implement logic to parse the price from the name input and reset form fields after submission.
+
+[48:10](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2890) Fetching and displaying all transactions in a React app.
+- Create a transaction endpoint to retrieve all transactions without filters, utilizing a GET request.
+- Implement useEffect in React to trigger a fetch call on component mount, ensuring all transactions are displayed.
+
+[50:41](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3041) Setting up asynchronous transaction handling in a MERN app.
+- An asynchronous function retrieves transaction data, converting the response into JSON format for further processing.
+- State management is implemented to store and display the list of transactions, showing the total count dynamically.
+
+[55:52](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3352) Calculate and format the balance in the MERN app.
+- Initialize balance at zero and create a loop to sum up transactions.
+- Use toFixed to format the balance with two decimal points for presentation.
+
+[58:29](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3509) Extracting the integer part of balance from a string in JavaScript.
+- The balance string is split using a dot to separate the integer from the fraction.
+- The second index of the resulting array is used to isolate the integer portion of the balance.
