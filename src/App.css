@@ -40,9 +40,9 @@ form input{
   border-radius: 5px;
 }
 
-form input[type="datetime-local"]{
+/* form input[type="datetime-local"]{
   color: #777;
-}
+} */
 
 /* this is the parent for some form inputs, so with this, children inside this block will be adjusted horizontally  */
 form div.basic{

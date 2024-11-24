@@ -1,0 +1,203 @@
+for using mongo, you can download any service in your machine, 
+or you can use mongo atlas (ONLINE)
+
+Bare Minimum Setup for MongoDB and App Connection:
+    The bare minimum steps to connect your React + Express app to MongoDB involve the following:
+
+        MongoDB Instance: Whether you’re using MongoDB locally (Terminal), with Compass, or via Atlas, you need MongoDB running 
+            either on your machine (Terminal) or remotely (Compass/Atlas).
+        Express App: You need to have the Express server running and configured to connect to MongoDB using Mongoose.
+        React Frontend: Your React frontend will communicate with the Express backend via API calls (usually fetch).
+
+NOTE: ALWAYS PREFER RUNNING THE MONGO ON CLOUD i.e, running mongodb atlas
+that helps the other users to access it anytime they want, and your database goes live
+
+1) how to run the mongo db server at local:
+    download mongo db community server
+    run mongo db: (using terminal)
+        navigate to bin folder in terminal
+        when you are inside bin via terminal:
+             ./mongodb --dbpath /Users/abhisheky/Desktop/abhi_mongodb
+             // the above command will store the data in specified path (abhi_mongodb folder) and run the mongo server
+             // for saving in different folder, give db path as the path where you want to store the mongo data.
+    then go to mongo compass(if downloaded):
+        if running in the local: then the port would be 27017: you can get to know it in the terminal logs when you run the mongo:
+        for eg.{"t":{"$date":"2024-11-19T19:38:07.051+05:30"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+        then paste the url as: mongodb://localhost:27017
+        the above is mongo db default port , click on connect and it will get connected 
+        use the mongo wherever you need
+
+2) what is mongodb, what is database?
+    cluster: collection of databases
+    Think of it like a digital filing cabinet:
+        A database is the cabinet.
+        A collection is a drawer (e.g., "Users", "Products").
+        A document is a file (e.g., details of one user).
+
+3) How can we relate frontend backend and database?
+    Frontend (React): Sends HTTP requests (e.g., POST, GET) to the backend.
+    Backend (Express): Handles HTTP requests, validates inputs, and sends database requests to MongoDB.
+    Database (MongoDB): Stores and retrieves data.  
+
+4) React at Port 3000, Express at 4000, MongoDB at 27017: What Happens After Adding Mongo?
+    MongoDB and Express serve different purposes and run independently:
+        MongoDB is a database server (port 27017) and does not replace Express.
+        Express is a web server (port 4000) that handles frontend requests and interacts with MongoDB.
+    Key Points:
+        You still need to run both MongoDB and Express together:
+            MongoDB (27017) stores and retrieves data.
+            Express (4000) handles API requests from React and communicates with MongoDB.
+        Why Different Ports?
+            React communicates with Express (3000 → 4000).
+            Express communicates with MongoDB (4000 → 27017).
+            These are separate connections.
+        You Don’t Access MongoDB Directly:
+            You use Express as a bridge to MongoDB. Users will never interact with MongoDB directly.
+
+5) Deployment requirements: 
+        a. Deploy Express to Keep the API Running
+        Yes, you need to deploy your Express backend to a cloud service (like AWS, Render, or Heroku) to ensure it is always running and accessible to users.
+
+        Without deployment, your API will only work locally and stop if you close your terminal.
+        b. Deploy React to Access It via a URL
+        Yes, deploying your React app allows users to open it in a browser via a URL (e.g., https://myapp.com).
+
+        Without deployment, users must run npm start locally, which isn't feasible for production.
+        c. Use MongoDB Atlas to Ensure Continuous Database Availability
+        Yes, using MongoDB Atlas means your database is hosted in the cloud and always accessible. Local MongoDB:
+
+        Only works on your machine.
+        Will not be available to users when your computer is off.
+
+6) what is difference between hosting and deployement?
+    Hosting: Hosting is the infrastructure where your app runs, provided by services like Netlify, Render, or AWS.
+    Deployment: Deployment is the process of uploading your code to the hosted infrastructure.
+    Who Does What:
+        You deploy by preparing and pushing your code.
+        Hosting services host and handle the technical setup for running your app.
+
+7) Difference Between Hosting Platform Defaults and CI/CD:
+    what actions are performed by hosting platform, if I make some changes to already deployed application code:
+        Without CI/CD:
+            The hosting platform (e.g., Netlify) immediately deploys your changes.
+            If there’s an error in your update, the live app might break.
+        
+        With CI/CD:
+            A CI/CD tool (e.g., GitHub Actions, Jenkins, GitLab CI) automatically:
+                Runs your tests and ensures all checks pass.
+                Builds your application.
+                Deploys to your hosting service only if all steps are successful.
+        
+        This is why ci/cd is important to make sure that the code which can break does not get deployed.
+
+8) few things about mongo db:
+    schema is not necessary to be same for each and every document: 
+    meaning: document1 : 
+        {
+            "name": "abhishek",
+            "role": "King"
+        }
+    document2:
+    {
+        "name":"rohan",
+        "location": "pune"
+    }
+
+9) setting up atlas ( The preferred way of using mongo db):
+    we use mongo atlas so that other people who are accesssing our website can store their data as well.
+    once you are logged in:
+        click on "create project"
+        click on "next", it will show you project owner details, dont do anything, click next
+            You can have only one free cluster in your account, 
+                    with one cluster: you can manage mulitple databases
+        Once it creates the cluster, 
+        go to database access
+            click on "add a new database user"
+            write the "username" and "password"(you can use autogenerated password)
+            add built in role for the user you added, give "read and write" permission
+            then click on "add user"
+        go to network access:
+            since you want that everybody can access it, that means if you are publishing the website
+            click on add IP address, and click on "allow it from any where"
+            check by connecting to compass, by its connection string 
+---------------------------------------CODING PART---------------------------------------------------------------
+
+10) how to connect the mongo to our express index.js?
+    install mongoose: for your code to communicate with mongo db, install mongoose library
+    cd moneytrackingapp/api: npm install mongoose
+
+    for mongoose:
+        we need to define models
+    
+    create a folder under api: as models
+    
+    under models folder:        
+            create one model file: transactionModel.js
+
+    under transaction.js:
+        we define schema, refer transaction.js
+        in the schema we provide the objects: with "type" and "required" status
+
+        once schema is done, we will go for defining model in the same file(transaction.js)
+        and export the model
+        once that is done we will import the model in index.js and use it 
+
+        before defining the routes, we connect to mongo db using mongoose.connect(uri,{params})[Refer index.js]
+
+11) what does this line ```model('Transaction', transactionSchema):``` do in transactionModel.js
+    The model() function in Mongoose creates a model based on a schema. 
+    A model is a wrapper around a MongoDB collection that allows you to interact with the documents within it 
+    (like inserting, updating, querying, etc.).
+
+    'Transaction': This is the name of the model. In Mongoose, the model name is capitalized (e.g., Transaction) and is singular. 
+    The model name is important for the collection name that will be used in MongoDB:
+
+    Mongoose convention: Mongoose automatically converts the model name to lowercase plural for the MongoDB collection name. So, 'Transaction' will map to the transactions collection in the database.
+    transactionSchema: This is the schema that defines the structure of the documents in the collection. Mongoose uses it to enforce the structure of documents inserted into the collection.
+
+    Therefore, the transactionModel is now a model that you can use to interact with documents in the transactions collection in MongoDB.
+
+    Conclusion:
+        model('Transaction', transactionSchema) creates a Mongoose model based on the Transaction schema, and it automatically 
+        associates it with a collection called transactions (because Mongoose pluralizes the model name).
+        If you want to change the database or collection, you can modify the connection string or specify a custom collection name.
+            for modifying custom collection name: [in transactionModel.js]
+                const transactionModel = model('Transaction', transactionSchema, 'customCollectionName');
+
+12) the below url will store the documents in the default database ie. test:
+    mongodb+srv://abhi:YWCIDV6ovbFqxkB3@cluster0.wv2bp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+    whereas the below url will store the documents in the specified database(here, transactionDatabase) :
+    mongodb+srv://abhi:YWCIDV6ovbFqxkB3@cluster0.wv2bp.mongodb.net/transactionDatabase?retryWrites=true&w=majority&appName=Cluster0
+
+
+---------------------------------------QUESTION ---------------------------------------------------------------
+
+
+difference between 
+const connectDB = async () => {
+    try{
+        await mongoose.connect(MONGO_URI, {
+        useNewUrlParser: true, 
+        useUnifiedTopology: true
+    });
+    console.log("connected to mongo db successfully");
+}catch(er)
+{
+    console.log('mongo db connection error', er)
+}
+}
+
+AND
+
+mongoose.connect(MONGO_URI, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true
+}).then(()=>{console.log("connected to mongo db successfully")})
+.catch((err)=>{console.log("Mongo DB connection error"), err})
+
+    
+
+        
+
+

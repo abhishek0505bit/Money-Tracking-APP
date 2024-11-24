@@ -1,3 +1,5 @@
+INSIDE API DIRECTORY: 
+
 1) we we need to send the data to backend, we have express js for that 
     Lets create index.js in api(for backend) folder:
     navigate to api folder in terminal
@@ -102,3 +104,149 @@
             router.get('/') (inside transactionRoutes.js) defines the path relative to that base path. 
             So, if you visit http://localhost:3000/transaction/, it will trigger the logic inside transactionController.handleTransaction.
 
+5) npm install nodemon: so that whatever changes we make in our code and save.. it immediately reflects on the server.
+    why nodemon index.js is not running in terminal after i installed it in api directory: using npm install nodemon command?
+        It looks like Nodemon was installed as a local dependency (inside your project) rather than globally. 
+        This is why running nodemon in the terminal doesn’t work, as nodemon is not available globally.
+
+            Option 1: Run Nodemon Locally
+                If Nodemon is installed locally, you can run it using npx, which will look for local packages in the project:
+                    npx nodemon index.js
+
+            Option 2: Install Nodemon Globally
+                To use nodemon globally from any directory, install it globally by running:
+                    npm install -g nodemon
+                After installing globally, you should be able to use nodemon directly:
+                    nodemon index.js
+
+            Option 3: Add Nodemon as a Script in package.json
+                You can add a script to your package.json in api folder(local project) to run Nodemon. 
+                In your package.json file, under "scripts", add a "dev" command:
+                    "scripts": {
+                    "dev": "nodemon index.js"
+                    }
+                Now, you can run Nodemon by typing:
+                    npm run dev
+            why this 3rd option with same command (nodemon index.js) is running successfully?
+                Direct terminal command nodemon index.js requires Nodemon to be global.
+                Running `npm run dev` uses the script in package.json, where Nodemon is recognized from the local node_modules.
+
+            USING THE 3rd OPTION TO RUN THE NODEMON IN OUR PROJECT.
+
+6) use cor: 
+    if your frontend is running on some other port : suppose 3000
+    and your backend is running on some other port : suppose 4000
+    and you want that these two should interact with each other, use cors else it will give cors error
+
+7) app.use(express.json()):
+    When a client (like your React app) sends data to the server using a POST or PUT request, the data is often sent in JSON string format. 
+    By default, Express doesn’t automatically understand JSON string. 
+    Using express.json() tells Express to parse the JSON payload and make it accessible in the req.body.
+    
+    the server wont understand the below json string payload: 
+        {
+            "name": "John",
+            "age": 30
+        }
+
+    server understands the below json format: 
+    { 
+        name: 'John', 
+        age: 30 
+    }
+
+    Summary
+        JavaScript object : Used in code to represent data.
+        JSON              : A string format to transfer data.
+        JSON.stringify()  : Converts a JavaScript object to a JSON string.
+        JSON.parse()      : Converts a JSON string to a JavaScript object.
+
+    Conclusion
+        To ensure proper communication:
+            Always send data as a JSON string (JSON.stringify(object)) from the client.
+            Use express.json() on the server to parse the JSON string back into a JavaScript object.
+
+
+
+
+8)When to Use module.exports vs module.exports = {}
+    module.exports = funName: Use when you're exporting a single entity, like a function or a class.
+    module.exports = { funName }: Use when you're exporting multiple items as an object.
+
+    Key Differences Between CommonJS and ES Modules
+        Feature	             | CommonJS                     | ES Modules
+        ----------------------------------------------------------------------------------
+        Export Syntax        | module.exports	            | export and export default
+        Import Syntax        | require	                    | import
+        Default Import Syntax| const x = require('./x')	    | import x from './x.js'
+        Named Import Syntax  | const { y } = require('./x')	| import { y } from './x.js'
+    
+    Summary
+        Scenario	                Export Syntax	            Import Syntax	                        Can Rename on Import?
+        Single Export (CommonJS)	module.exports = funName	const x = require('./funName')	        ✅ Yes
+        Multiple Exports (CommonJS)	module.exports = { a, b }	const { a, b } = require('./funName')	❌ No Unless captured as a whole object: ```const x = require('./funName'); x.a(); x.b();``` 
+        Default Export (ESM)	    export default funName	    import x from './funName.js'	        ✅ Yes
+        Named Export (ESM)	        export const a = ...	    import { a } from './funName.js'	    ❌ No (unless aliased)
+
+    
+    IMPORTANT: 
+        what to use when?
+            Exporting a Single Function/Class:
+                Use module.exports = funName (CommonJS) or export default funName (ESM).
+            
+            Exporting Multiple Functions/Constants:
+                Use module.exports = { funName1, funName2 } (CommonJS) or export const funName1, export const funName2 (ESM).
+            
+            Importing:
+                Match the export type:
+                    Default export: No curly braces.
+                    Named export: Use curly braces and match the name exactly.
+
+9) when not using a router :
+    in Index.js:
+        initalize the routes using express app:
+            app.get('/route',(req, res)=>{// logic})
+            app.post()
+    
+    when using express router:
+        we have 3 files:
+            Index.js(main file): MOUNTING ROUTES 
+            routes.js: DEFINING ENDPOINTS 
+            controller.js: HANDLING LOGIC 
+
+        in Index.js: (main file: which tells which ROUTES are MOUNTED where) 
+            const routes = require('./routes')
+            app.use('/route1', routes); // mount the routes(under routes.js) at '/route1', meaning all the routes defined in routes.js are accessible at '/route1' path(basepath)
+        
+        routes.js: (which ENDPOINT is calling what LOGIC)        
+            const express = require('express');
+            const router = express.router();
+            const controllerLogic = require('./controller.js')
+            router.get('/', controllerLogic.logic1); //this will be appended to the base endpoint '/route' defined at index.js and become: '/route/'
+            router.post('endpoint to append', logic)
+        
+        controller.js: (LOGICS: [normal functions])
+            const logic1=(req, res)=>{
+                res.json(req.body)
+            }
+            const logic2 =()=>{} // normal functions 
+            module.exports = {logic1, logic2}; // normal way of exporting multiple functions 
+
+10) what is payload and preview under network tab in chrome?
+    payload: request body, which we sent to server
+    preview: the response which we receive from the server 
+
+11) install dotenv in api project, so that we can use the MONGO_URI in that file 
+    and use it in the express code(index.js)
+
+12) More on CORS: 
+        Without CORS:
+            Your backend is inaccessible to cross-origin requests from the browser.
+        
+        With app.use(cors()):
+            Your backend accepts requests from any origin (potentially insecure).
+            your backend accepts requests from any website, or from any person who knows your api endpoint.
+
+        To Restrict Access:
+            Configure CORS to allow only specific origins using corsOptions.
+            Add additional security measures like authentication, custom headers, and rate limiting.

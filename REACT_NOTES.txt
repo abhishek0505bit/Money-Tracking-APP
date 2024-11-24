@@ -174,12 +174,357 @@ lets understand event.target.value with onChange:
             fetchData(handleData); // Outputs: Data received: (4) {userId: 1, id: 1, title: "sunt aut ...}
         This will give you the proper output, as it can be used with .then and .catch and doesn't execute immediately.
 
+7) what is e.preventDefault();
+    e.preventDefault() prevents the page from reloading (the default behavior for form submissions).
+    Why Forms Refresh the Page?
+        When you submit a form without using JavaScript, the browser automatically 
+        sends a request (usually a POST request) to the URL specified in the form’s action attribute. 
+        If there is no action specified, the form submits to the current URL by default, which refreshes the page. 
+        This behavior is the browser’s default way of handling form submissions, 
+        and it dates back to traditional web forms where each submission would reload the page with the updated information.
+
+        So in summary:
+
+        When you submit a form, the browser will reload the page because it’s trying to send data to 
+        the server and then display the response (even if the response is blank or the same page).
+        If the form submission is successful, the page reloads, and the form fields reset.
+
+8) Common use cases of e.preventDefault()?
+    Form Submission: 
+        By default, when you submit a form, the browser refreshes the page. 
+        If you’re handling form submission with JavaScript (e.g., sending data via AJAX or performing validations), 
+        you might want to prevent this default behavior.
+
+    Anchor Tags (<a>): 
+        An anchor tag (<a href="URL">) navigates to a new page by default. 
+        If you want to handle the click with JavaScript (e.g., opening a popup or loading content dynamically), 
+        you can prevent the default navigation.
+
+    Buttons Inside Forms: 
+        If you have a button inside a form and want to use it for a specific action without submitting the form, 
+        e.preventDefault() stops the form submission.
+
+9) how to use .env in react app?
+    Unlike other files where we use dotenv in below manner:
+        npm install dotenv
+        require('dotenv').config();
+        process.env.variable_name
+    In react, we use it like this:
+        Create .env file
+        each variable should start with REACT_APP
+        use those variables in the code, for eg. REACT_APP_URL
+
+        under the code:
+            process.env.REACT_APP_URL(//if it gives undefined, re run the react app and then check)
+
+
+10) for front end to talk to backend, we use cors library
+    install cors in the backend root directory: money-tracking-app/api: npm install cors
+
+
+11) hit the add new transaction button, and open the network tab:
+    to check whether transaction endpoint is being hit or not
+    under the transaction, click on transaction under network: 
+        check the payload, is it showing the correct data which we are sending from the frontend
+        check the preview, make sure its not empty, and stores the data which we are sending from frontend 
+
+
+12) the user will put the price and the name in the first box:
+     and we have to grab it and send it to the backend:
+
+
+13) to fetch the transactions from the database and show it in the ui?
+    we will use useEffect(effect, [dependencies]), that on every render it should call getTransactions 
+
+14) difference bw fetch(url).then((response)=>response.json()) and fetch(url).then((response)=>{response.json()}) ?
+        (response) => response.json() takes response as an argument and returns response.json(). 
+        However, if you wrap it in { } without an explicit return, it doesn't return anything to the next .then() in the chain.
+
+        to use {} in fetch(url).then((response)=>{response.json}):
+        you have to use it in below manner to return the response.json, else it wont return anything:
+            function getData(url) {
+                return fetch(url)
+                    .then((response) => {
+                        if (!response.ok) {
+                            // Throw error if response status is not OK (e.g., 404, 500)
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    // Parse the response JSON
+                    return response.json();
+                    })
+                    .then((data) => {
+                        // Process or return the data
+                        console.log("Data fetched successfully:", data);
+                        return data; // Pass this data to the caller
+                    })
+                    .catch((error) => {
+                        // Handle any errors
+                        console.error("Error occurred while fetching data:", error);
+                        // Optionally rethrow the error if the caller needs to handle it
+                        throw error;
+                    });
+                }
+
+
+15) Lifecycle Events: React’s Component Lifecycle
+        A React component goes through three main phases:
+            Mounting:
+                This happens when the component is first added to the DOM and made visible.
+                
+                Common use case:
+                    Initialize data (e.g., fetch API data).
+                    Start subscriptions (e.g., WebSocket or event listeners).
+                
+                Code eg: 
+                useEffect(() => {
+                    console.log('Component mounted! Fetching data...');
+                    return () => console.log('Component unmounted! Cleanup goes here.');
+                    }, []); // Runs only once during mounting
+            
+            Updating:
+                This happens whenever:
+                    The component’s state changes (useState).
+                    The component receives new props from its parent.
+                
+                Common use case:
+                    Re-fetch data if dependencies change.
+                    Run side-effects based on specific state changes.
+
+                Code eg:
+                    useEffect(() => {
+                        console.log('Updating! Count has changed!');
+                    }, [count]); // Runs only when `count` changes
+  
+            Unmounting:
+                This happens when:
+                    A component is removed from the DOM.
+                    React performs cleanup, like stopping timers or removing event listeners.
+                
+                Common use case:
+                    Stop a subscription or clear an interval.
+
+                Code eg: 
+                    useEffect(() => {
+                        const interval = setInterval(() => console.log('Interval running'), 1000);
+
+                        return () => {
+                            console.log('Cleaning up interval!');
+                            clearInterval(interval);
+                        };
+                        }, []);
+
+
+        Lifecycle Phase	    What Happens	                    Code Example
+        Mounting	        Component appears on screen	        useEffect(() => {...}, []);
+        Updating	        State/props change	                useEffect(() => {...}, [dependency]);
+        Unmounting	        Component removed from DOM	        Cleanup in useEffect(() => {...}, []) return
+
+        Simple Visual Explanation
+            Imagine your app is like a house:
+                Mounting: You move into a new house (component is added to the screen).
+                Updating: You decorate or rearrange furniture (state/props change).
+                Unmounting: You move out, clean up, and leave the house (component is removed).
+
+16) more on component unmounting:
+    When Does a Component Unmount?
+        - When It's Removed from the DOM:
+            React unmounts a component when it’s removed from the DOM due to changes in the parent component or routing.
+                For example:
+                    function App() {
+                    const [showComponent, setShowComponent] = useState(true);
+
+                    return (
+                        <div>
+                        <button onClick={() => setShowComponent(!showComponent)}>Toggle Component</button>
+                        {showComponent && <ChildComponent />}
+                        </div>
+                    );
+                    }
+
+                    function ChildComponent() {
+                    useEffect(() => {
+                        console.log("ChildComponent mounted!");
+
+                        return () => console.log("ChildComponent unmounted!");
+                    }, []);
+
+                    return <div>I am the child component.</div>;
+                    }
+                What happens here?
+                    Clicking the button toggles the showComponent state.
+                    When showComponent is false, <ChildComponent /> is removed from the DOM, triggering its unmount logic.
+        
+        - When Navigating to Another Page (React Router):
+            If you're using routing, switching between routes unmounts the previous page's components:
+            Code eg:
+                import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+                function App() {
+                return (
+                    <Router>
+                    <Switch>
+                        <Route path="/home" component={HomePage} />
+                        <Route path="/about" component={AboutPage} />
+                    </Switch>
+                    </Router>
+                );
+                }
+
+                function HomePage() {
+                useEffect(() => {
+                    console.log("HomePage mounted!");
+
+                    return () => console.log("HomePage unmounted!");
+                }, []);
+
+                return <h1>Home</h1>;
+                }
+            What happens here?
+                Switching from /home to /about unmounts the HomePage component.
+
+        - Dynamic Conditional Rendering:
+            Components can unmount when their conditions are no longer satisfied:
+            Code Eg: 
+                function App() {
+                const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+                return (
+                    <div>
+                    {isLoggedIn ? <UserDashboard /> : <LoginForm />}
+                    </div>
+                );
+                }
+            What happens here?
+                When isLoggedIn changes, React will unmount <LoginForm /> and mount <UserDashboard />.
+        
+        - Parent Component Unmounts
+            If a parent component unmounts, all its children unmount as well.
+
+17) Conditional rendering: {showComponent && <ChildComponent />}
+    You’re absolutely correct that the code:
+        {showComponent && <ChildComponent />}
+        is React's shorthand syntax for a conditional rendering that corresponds to:
+            if (showComponent) {
+            return <ChildComponent />;
+            }
+    Why Do We Use This Syntax?
+        This shorthand makes it concise and readable to conditionally include components in the JSX. 
+        It’s one of React’s patterns for conditional rendering, using JavaScript's logical && operator.
+
+    How Does It Work?
+        The && operator works because of short-circuit evaluation in JavaScript:
+            If the left-hand side of && evaluates to true, the right-hand side is evaluated and returned.
+            If the left-hand side is false, the right-hand side is ignored, and nothing is returned.
+        For eg:
+        {showComponent && <ChildComponent />}
+            If showComponent is true, React renders <ChildComponent />.
+            If showComponent is false, React renders nothing (i.e., null).
+    
+    When to Use This Pattern?
+        Simple Conditional Rendering: Use && when there’s no else case and you only need to render something when a condition is true.
+
+        For Readability:
+            Use && for short conditions.
+            Use ? : for more complex conditions.
+    CONCLUSION:
+        Logical && in JavaScript: "Evaluate both sides, and proceed if both are true."
+        React JSX &&: "If the left-hand side is truthy, render the right-hand side."    
+
+18) what is a component..?
+    COMPONENT: Javascript functions + jsx inside return block (which is shown on the UI)
+    or
+       - A function that returns JSX.
+       - Can accept props as arguments.
+    ------
+    EG: 
+    function MyComponent() {
+        return <h1>Hello World!</h1>;
+        }
+
+    App.js file: 
+    // Using MyComponent
+    <MyComponent />
+
+    Wherever you use <MyComponent />, its JSX (<h1>Hello World!</h1>) will render.
+
+19) How Props Work (Correct Understanding):
+        Yes, props are:
+
+            - Passed inside the return block of one component:
+                <Child data="Hello" />
+            - Received in the next component as arguments:  
+                function Child(props) {
+                return <div>{props.data}</div>;
+                }
+            - Used inside that component.
+            
+            For Grandparent Example:
+                Yes, only the component used in App.js (like Grandparent) gets rendered in the browser. 
+                The intermediate components (Parent, Child) get processed because they’re part of the rendering chain.
+
+20)  When to Use props.cartData vs. cartData?
+        props.cartData:
+            Used when inside the parent component, where all props are accessed as a single object (props).
+            Example:
+                const Header = (props) => {
+                return <div>{props.cartData.join(", ")}</div>;
+                };
+        
+        cartData:
+            Used when the prop is destructured directly in the parameter list of the component function.
+            Example:
+                const Header = ({ cartData }) => { 
+                return <div>{cartData.join(", ")}</div>;
+                };
+        
+        Why Destructure?
+            Cleaner code.
+            Avoids repeatedly writing props.someProp.
 
 
 
+21) spread operator in detail : ...iterables
+    spread operator is the operator is used with iterables
 
+    Very good eg of Redux on spread operator: 
+        Explanation of ...state and `cart: [...state.cart, action.payload]
+        Code eg: 
+            return {
+            ...state, // Copy existing state
+            cart: [...state.cart, action.payload], // Add new item to the cart array
+            };
 
-
+        Step-by-Step Breakdown
+            1) ...state: Spreads out all existing state properties into a new object.
+            Example:
+                const state = { cart: ["item1"], user: "John" };
+                const newState = { ...state };
+                console.log(newState); 
+                // Output: { cart: ["item1"], user: "John" }
+        
+            2) cart: [...state.cart, action.payload]:
+                state.cart: Refers to the current cart array (e.g., ["item1"]).
+                action.payload: Represents the new item being added (e.g., "item2").
+                [...state.cart, action.payload]:
+                    Creates a new array by copying the existing cart (state.cart) and adding action.payload at the end.
+                    Example:
+                        const state = { cart: ["item1"] };
+                        const newCart = [...state.cart, "item2"];
+                        console.log(newCart);
+                        // Output: ["item1", "item2"]
+            
+            3) Final Object:
+                Combines the spread state and updated cart into a new object.
+                Example:
+                    const state = { cart: ["item1"], user: "John" };
+                    const action = { payload: "item2" };
+                    const updatedState = {
+                    ...state,
+                    cart: [...state.cart, action.payload],
+                    };
+                    console.log(updatedState);
+                    // Output: { cart: ["item1", "item2"], user: "John" }
+                    // FINAL OBJECT: updatedState = existing state object, 
+                                            but make changes in state.cart(cart array inside state object) by adding one more item(i.e, action.payload) in cart array 
 
 
 
@@ -193,66 +538,6 @@ lets understand event.target.value with onChange:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-get the understanding of express app again from chat gpt in detail
-nodemon(to let changes reflect on the ui without doing: node index.js) => nodemon index.js [This will automatically reflect the changes made in code on UI  ]
-we should have the settings file(.env) file in order to keep track of the base uRL, because it may change in the server
-need to install cors, in order to talk to frontend
-app.use(express.json())
-we use mongoose library to connect to mongo db
-model and schema in mongoose
-what is display : inline-block(is it related to parent)
-
-when to use then, how to know when to use then and when to use async (✅) understood 
-Is fetch(url).then(response) and await const response = await fetch(url) is same..? ✅ yes both are same 
-and .then(transactions)=>{setTransactions(transactions)} & .then(setTransactions) same? yes, .then will automatically pass the resolved value (from the Promise) to it.
-clarity on async, which is async with simpler examples, if not async , can we put then before an async thing: in detail✅understood, yes we can replace async with .then 
-useEffect usage in detail 
-
-
-[17:18](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1038) Finalize form styling and integrate API for transaction management.
-- Remove unnecessary borders and adjust spacing for a cleaner look in the transaction list.
-- Create state variables for form inputs and implement functionality to submit new transactions to the database.
-
-[19:53](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1193) Setting up backend for the MERN Money Tracker App with Express.
-- Define a function for adding new transactions in the React app that communicates with the backend.
-- Create an Express server in a new 'API' directory to handle requests and test the setup with an endpoint.
-
-[25:04](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1504) Setting up API integration for the MERN Money Tracker App.
-- Configuring the API URL using environment variables and ensuring that the frontend can access it.
-- Handling form submission by preventing the default behavior and setting up options for the Fetch method to post transactions.
-
-[27:40](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1660) Setting up CORS and JSON parsing for backend communication.
-- Learned to handle CORS errors by importing and using the CORS middleware in Express to allow communication between frontend and backend apps.
-- Implemented JSON parsing in Express to ensure that incoming request data from the React app can be processed and stored correctly.
-
-[32:43](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=1963) Setting up Mongoose for database interactions in the MERN money tracker app.
-- The user configures server access to allow deployment and database creation, ensuring functionality regardless of server IP.
-- Mongoose is installed to handle database operations, requiring the definition of a schema with fields like name, description, and date time for transactions.
-
-[35:22](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2122) Creating and exporting a transaction model for the MERN app.
-- Define a Mongoose transaction model using schema, allowing for structured data storage.
-- Connect the model to the MongoDB database using Mongoose, configuring connection settings in an environment file.
-
-[40:21](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2421) Integrating transaction data into the MERN application model.
-- Using Mongoose to create a new transaction document in the database requires defining the transaction model with fields like name, description, and date-time.
-- To ensure proper data capture, modifications were made to include the price in the transaction model, making it a required field alongside the name and description.
-
-[42:50](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2570) Extract and manage price and name in a MERN app form.
-- Use JSON.stringify to structure data for easier reading by separating it into rows.
-- Implement logic to parse the price from the name input and reset form fields after submission.
-
-[48:10](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=2890) Fetching and displaying all transactions in a React app.
-- Create a transaction endpoint to retrieve all transactions without filters, utilizing a GET request.
-- Implement useEffect in React to trigger a fetch call on component mount, ensuring all transactions are displayed.
-
-[50:41](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3041) Setting up asynchronous transaction handling in a MERN app.
-- An asynchronous function retrieves transaction data, converting the response into JSON format for further processing.
-- State management is implemented to store and display the list of transactions, showing the total count dynamically.
-
-[55:52](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3352) Calculate and format the balance in the MERN app.
-- Initialize balance at zero and create a loop to sum up transactions.
-- Use toFixed to format the balance with two decimal points for presentation.
-
-[58:29](https://www.youtube.com/watch?v=aD1c_YmHsFg&t=3509) Extracting the integer part of balance from a string in JavaScript.
-- The balance string is split using a dot to separate the integer from the fraction.
-- The second index of the resulting array is used to isolate the integer portion of the balance.
+❓we should have the settings file(.env) file in order to keep track of the base uRL, because it may change in the server? ❓
+❓what is display : inline-block(is it related to parent) 
+what are these blocks in vs code while typing, deep dive in vs code to understand what are functions and what are variables..?❓
