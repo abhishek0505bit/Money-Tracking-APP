@@ -1,0 +1,10 @@
+1) It was not pushing, and showing error?
+- the issue was due to large node modules files, It was unable to push it..
+- so we installed git lfs using terminal first so that we can use it in our vs terminal:
+        ``` brew install git-lfs```
+- once this is done, we move to vs terminal:
+        git reset --soft HEAD~1
+    - add api/node_modules to .gitignore, for future untracking
+    - Untrack node_modules so Git stops monitoring it:    
+        git rm -r --cached node_modules: This will remove the folder from Git's tracking (but not delete it locally).
+    - Re commit your changes and push it
