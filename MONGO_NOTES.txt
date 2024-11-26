@@ -165,10 +165,10 @@ that helps the other users to access it anytime they want, and your database goe
                 const transactionModel = model('Transaction', transactionSchema, 'customCollectionName');
 
 12) the below url will store the documents in the default database ie. test:
-    mongodb+srv://abhi:YWCIDV6ovbFqxkB3@cluster0.wv2bp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    mongodb+srv://user:<password>@cluster0.wv2bp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
     whereas the below url will store the documents in the specified database(here, transactionDatabase) :
-    mongodb+srv://abhi:YWCIDV6ovbFqxkB3@cluster0.wv2bp.mongodb.net/transactionDatabase?retryWrites=true&w=majority&appName=Cluster0
+    mongodb+srv://user:<password>@cluster0.wv2bp.mongodb.net/transactionDatabase?retryWrites=true&w=majority&appName=Cluster0
 
 
 ---------------------------------------QUESTION ---------------------------------------------------------------
