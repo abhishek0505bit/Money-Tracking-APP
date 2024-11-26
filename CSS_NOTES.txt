@@ -57,4 +57,27 @@ THIS IS WHY WE USE BOX SIZING: BORDER BOX, IN ORDER TO DEAL WITH ELEMENT SIZES I
 Here the dimensions of the element are calculated as: 
 width = border + padding + width of the content, and height = border + padding + height of the content.
 WITH BORDER BOX, YOU ARE MAKING SURE, THAT WHATEVER WIDTH OR HEIGHT YOU ARE PROVIDING, SHOULD NOT OVERFLOW DUE TO PADDING, BORDER AND MARGIN.
+
+2). block, inline and inline-block elements: 
+    inline elements: 
+        These elements dont care about the width and height, 
+        takes the space according to the Content
+        Direction: Go horizontally
+        Direction of elements : --------------->
+    
+    inline - block elements:
+        These elements care about the width and height, 
+        takes the space according to the heigh and width if provided, and other parameters, but goes horizontally.
+        Direction: Go horizontally
+        Direction of elements: ---------------->
+    
+    block elements:
+        These takes full width of the container by default
+        Each block element appears on the new line
+        Direction: Go vertically
+        Direction of elements: |
+                               |
+                               |
+                               |
+                               v     
 ----------------------------------------------------------------------------------------------------------------------------------------------

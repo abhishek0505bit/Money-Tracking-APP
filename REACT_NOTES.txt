@@ -226,7 +226,7 @@ lets understand event.target.value with onChange:
     to check whether transaction endpoint is being hit or not
     under the transaction, click on transaction under network: 
         check the payload, is it showing the correct data which we are sending from the frontend
-        check the preview, make sure its not empty, and stores the data which we are sending from frontend 
+        check the preview, make sure its not empty, it shows the data which is coming as a response from res.json or res.send 
 
 
 12) the user will put the price and the name in the first box:
@@ -234,7 +234,8 @@ lets understand event.target.value with onChange:
 
 
 13) to fetch the transactions from the database and show it in the ui?
-    we will use useEffect(effect, [dependencies]), that on every render it should call getTransactions 
+    we will use useEffect(effect, [dependencies]), that on first render it should call getTransactions when we are not using dependencies array.
+    suppose we use useEffect(effect, [transactions]), so with this, whenever "transactions" value changes, it will re-render
 
 14) difference bw fetch(url).then((response)=>response.json()) and fetch(url).then((response)=>{response.json()}) ?
         (response) => response.json() takes response as an argument and returns response.json(). 
@@ -283,7 +284,7 @@ lets understand event.target.value with onChange:
             
             Updating:
                 This happens whenever:
-                    The component’s state changes (useState).
+                    The component’s state changes.
                     The component receives new props from its parent.
                 
                 Common use case:
@@ -394,7 +395,7 @@ lets understand event.target.value with onChange:
                 );
                 }
             What happens here?
-                When isLoggedIn changes, React will unmount <LoginForm /> and mount <UserDashboard />.
+                When isLoggedIn changes to true, React will unmount <LoginForm /> and mount <UserDashboard />.
         
         - Parent Component Unmounts
             If a parent component unmounts, all its children unmount as well.
@@ -449,9 +450,15 @@ lets understand event.target.value with onChange:
 19) How Props Work (Correct Understanding):
         Yes, props are:
 
-            - Passed inside the return block of one component:
-                <Child data="Hello" />
+            - Passed inside the return block of one component from the parent component:
+                Parent.js:
+                function Parent(){
+                    return(
+                        <Child data="Hello" />
+                            )
+                }
             - Received in the next component as arguments:  
+            Child.js: 
                 function Child(props) {
                 return <div>{props.data}</div>;
                 }
@@ -538,6 +545,3 @@ lets understand event.target.value with onChange:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-❓we should have the settings file(.env) file in order to keep track of the base uRL, because it may change in the server? ❓
-❓what is display : inline-block(is it related to parent) 
-what are these blocks in vs code while typing, deep dive in vs code to understand what are functions and what are variables..?❓
