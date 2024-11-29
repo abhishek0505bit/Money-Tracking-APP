@@ -134,11 +134,11 @@ that helps the other users to access it anytime they want, and your database goe
     under models folder:        
             create one model file: transactionModel.js
 
-    under transaction.js:
-        we define schema, refer transaction.js
+    under transactionModel.js:
+        we define schema, refer transactionModel.js
         in the schema we provide the objects: with "type" and "required" status
 
-        once schema is done, we will go for defining model in the same file(transaction.js)
+        once schema is done, we will go for defining model in the same file(transactionModel.js)
         and export the model
         once that is done we will import the model in index.js and use it 
 
